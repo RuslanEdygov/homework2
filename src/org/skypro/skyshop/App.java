@@ -131,6 +131,5 @@ public class App {
         } catch (BestResultNotFound e) {
             System.out.println("Ошибка: " + e.getMessage());
         }
-
     }
 }
