@@ -1,12 +1,9 @@
 package org.skypro.skyshop;
 
 import org.skypro.skyshop.basket.ProductBasket;
-import org.skypro.skyshop.product.FixPriceProduct;
-import org.skypro.skyshop.product.SimpleProduct;
-import org.skypro.skyshop.product.DiscountedProduct;
+import org.skypro.skyshop.product.*;
+import org.skypro.skyshop.search.BestResultNotFound;
 import org.skypro.skyshop.search.SearchEngine;
-import org.skypro.skyshop.product.Article;
-import org.skypro.skyshop.product.Searchable;
 
 import java.sql.SQLOutput;
 
@@ -78,7 +75,61 @@ public class App {
                 System.out.println(result.getStringRepresentation());
             }
         }
+        //Пустое имя
+        try {
+            Product product1 = new SimpleProduct(" ", 100);
+        } catch (IllegalArgumentException e) {
+            System.out.println("Ошибка при создании продукта: " + e.getMessage());
+        }
+        //Отрицательная цена
+        try {
+            Product product2 = new SimpleProduct("Молоко", -100);
+        } catch (IllegalArgumentException e) {
+            System.out.println("Ошибка при создании продукта: " + e.getMessage());
+        }
+        //Нулевая цена
+        try {
+            Product product3 = new SimpleProduct("Хлеб", 0);
+        } catch (IllegalArgumentException e) {
+            System.out.println("Ошибка при создании продукта: " + e.getMessage());
+        }
+        //Некорректная скидка
+        try {
+            Product product4 = new DiscountedProduct("Сыр", 100, 150);
+        } catch (IllegalArgumentException e) {
+            System.out.println("Ошибка при создании продукта: " + e.getMessage());
+        }
+        //Отрицательная скидка
+        try {
+            Product product4 = new DiscountedProduct("Сыр", 100, -150);
+        } catch (IllegalArgumentException e) {
+            System.out.println("Ошибка при создании продукта: " + e.getMessage());
+        }
+        //Отрицательная цена
+        try {
+            Product product4 = new DiscountedProduct("Сыр", -100, 150);
+        } catch (IllegalArgumentException e) {
+            System.out.println("Ошибка при создании продукта: " + e.getMessage());
+        }
 
+        SearchEngine searchEngine = new SearchEngine(10);
+        searchEngine.add(new SimpleProduct("Пылесос", 3000));
+        searchEngine.add(new DiscountedProduct("Пылесос Dyson", 20000, 20));
+        searchEngine.add(new FixPriceProduct("Утюг"));
 
+        searchEngine.add(new Article("Как выбрать пылесос", "В этой статье мы расскажем..."));
+        searchEngine.add(new Article("Уход за техникой", "Уход за пылесосами и утюгами"));
+        try {
+            Searchable best = searchEngine.findBestMatch("пылесос");
+            System.out.println("Лучший результат: " + best.getStringRepresentation());
+        } catch (BestResultNotFound e) {
+            System.out.println("Ошибка: " + e.getMessage());
+        }
+        try {
+            Searchable best = searchEngine.findBestMatch("телевизор");
+            System.out.println("Лучший результат: " + best.getStringRepresentation());
+        } catch (BestResultNotFound e) {
+            System.out.println("Ошибка: " + e.getMessage());
+        }
     }
 }
